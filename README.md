@@ -20,7 +20,7 @@ Caso deseje, já existe uma imagem publicada com esse script: `rafamdd/build-cnp
 
 ### Shell
 
-Antes, você precisa adicionar os pacotes confome informado no Dockerfile. Por isso recomendo via Docker.
+Antes, você precisa adicionar os pacotes confome informado no Dockerfile. Também criar duas pastas: `dados-publicos` e `dados-publicos-zip`. Por isso recomendo utilizar Docker.
 
 Para executar em shell, basta ajustar as variaveis de ambiente conforme model.env, ou entao substituir no inicio do arquivo `entrypoint-mongo.sh`
 
