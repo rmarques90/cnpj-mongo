@@ -18,6 +18,8 @@ Esse processo pode levar em torno de 7 a 8 horas. Pode ser que leve mais ou meno
 
 ### Shell
 
+Antes, você precisa adicionar os pacotes confome informado no Dockerfile. Por isso recomendo via Docker.
+
 Para executar em shell, basta ajustar as variaveis de ambiente conforme model.env, ou entao substituir no inicio do arquivo `entrypoint-mongo.sh`
 
 Recomendo executar `chmod +x get-dados-gov.sh && chmod +x unzip_files.sh && chmod +x entrypoint-mongo.sh` para dar as permissões corretas aos scripts.
