@@ -15,6 +15,8 @@ Para executar: `docker run -d --name cnpj-mongo --env-file .env cnpj-mongo`
 
 Esse processo pode levar em torno de 7 a 8 horas. Pode ser que leve mais ou menos dependendo do seu recurso computacional.
 
+Caso deseje, já existe uma imagem publicada com esse script: `rafamdd/build-cnpj-database:mongo-1.0`
+
 
 ### Shell
 
