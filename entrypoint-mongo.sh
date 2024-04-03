@@ -239,7 +239,9 @@ db.empresas.createIndex({ razao_social: 1 }, { background: true });
 
 db.estabelecimento.createIndex({ cnpj_basico: 1 }, { background: true });
 db.estabelecimento.createIndex({ uf: 1 }, { background: true });
+db.estabelecimento.createIndex({ cnae_fiscal: 1 }, { background: true });
 db.estabelecimento.createIndex({ cnpj_basico: 1, cnpj_ordem: 1, cnpj_dv: 1 }, { background: true });
+db.estabelecimento.createIndex({ uf: 1, cnae_fiscal: 1 }, { background: true });
 
 db.socios_original.createIndex({ cnpj_basico: 1 }, { background: true });
 
