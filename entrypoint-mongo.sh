@@ -231,108 +231,17 @@ done
 
 logDateTime "Done importing the big ones. Now lets do heavy updates..."
 
-logDateTime "2 - Update the colum capital social..."
-
-# Define the MongoDB update operation
-MONGO_UPDATE_OPERATION_CAPITAL='
-db.empresas.updateMany(
-    { capital_social: { $exists: false } },
-    [
-        { 
-            $set: { 
-                capital_social: {
-                    $toDouble: {
-                        $cond: {
-                            if: { $eq: ["$capital_social_str", ""] },
-                            then: 0,
-                            else: { $toDouble: { $replaceAll: { input: "$capital_social_str", find: ",", replacement: "" } } }
-                        }
-                    }
-                }
-            } 
-        }
-    ]
-);
-'
-
-# Execute the MongoDB update operation
-mongosh "$MONGODB_URI/$DATABASE_NAME" --eval "$MONGO_UPDATE_OPERATION_CAPITAL" || handleMongoError "Updating capital social"
-
-
-logDateTime "5 - Update cnpj full column..."
-
-MONGO_UPDATE_OPERATION_CNPJ='
-db.estabelecimento.updateMany(
-    { cnpj: { $exists: false } },
-    [
-        { 
-            $set: { 
-                cnpj: { 
-                    $concat: [ "$cnpj_basico", "$cnpj_ordem", "$cnpj_dv" ]
-                } 
-            } 
-        }
-    ]
-);
-'
-
-# Execute the MongoDB update operation
-mongosh "$MONGODB_URI/$DATABASE_NAME" --eval "$MONGO_UPDATE_OPERATION_CNPJ" || handleMongoError "Updating cnpj"
-
-
 logDateTime "6 - Final indexes and creating table..."
 
 MONGO_FINAL_OPERATIONS='
 db.empresas.createIndex({ cnpj_basico: 1 }, { background: true });
-db.empresas.createIndex({ cnpj_: 1 }, { background: true });
 db.empresas.createIndex({ razao_social: 1 }, { background: true });
+
 db.estabelecimento.createIndex({ cnpj_basico: 1 }, { background: true });
+db.estabelecimento.createIndex({ uf: 1 }, { background: true });
+db.estabelecimento.createIndex({ cnpj_basico: 1, cnpj_ordem: 1, cnpj_dv: 1 }, { background: true });
 
 db.socios_original.createIndex({ cnpj_basico: 1 }, { background: true });
-
-db.socios.drop();
-
-db.socios.aggregate([
-    {
-        $lookup: {
-            from: "estabelecimento",
-            localField: "cnpj_basico",
-            foreignField: "cnpj_basico",
-            as: "estabelecimento"
-        }
-    },
-    {
-        $unwind: "$estabelecimento"
-    },
-    {
-        $match: { "estabelecimento.matriz_filial": "1" }
-    },
-    {
-        $project: {
-            _id: 0,
-            cnpj: "$estabelecimento.cnpj",
-            cnpj_basico: "$cnpj_basico",
-            identificador_de_socio: 1,
-            nome_socio: 1,
-            cnpj_cpf_socio: 1,
-            qualificacao_socio: 1,
-            data_entrada_sociedade: 1,
-            pais: 1,
-            representante_legal: 1,
-            nome_representante: 1,
-            qualificacao_representante_legal: 1,
-            faixa_etaria: 1
-        }
-    },
-    {
-        $out: "socios"
-    }
-]);
-
-db.socios.createIndex({ cnpj: 1 }, { background: true });
-db.socios.createIndex({ cnpj_basico: 1 }, { background: true });
-db.socios.createIndex({ cnpj_cpf_socio: 1 }, { background: true });
-db.socios.createIndex({ nome_socio: 1 }, { background: true });
 
 db.simples.createIndex({ cnpj_basico: 1 }, { background: true });
 '
